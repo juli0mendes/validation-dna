@@ -1,0 +1,18 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: validation-dna
+  data:
+    mongodb:
+      auto-index-creation: false
+      uri: mongodb://localhost:27017/validation-dna
+      database: validation-dna
+  profiles:
+    active: local
+
+management:
+  endpoints:
+    web:
+      base-path: /
