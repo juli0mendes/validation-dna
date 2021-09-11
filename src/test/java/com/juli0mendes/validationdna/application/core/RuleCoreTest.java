@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@DisplayName("Core - Order")
+@DisplayName("Core - Rule")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class RuleCoreTest {
 
