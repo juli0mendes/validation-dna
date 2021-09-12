@@ -41,33 +41,15 @@ public class CreatureCore implements CreaturePortIn {
         // get criterias exists
         Rule isSimian = this.ruleDatabasePortOut.getByName("is_simian");
 
-        // convert array string to multidimensional array
-
-//        String[][] myVetor = new String[dna.length][dna[0].length()];
-//
-//        for (int lines = 0; lines < dna.length; lines++) {
-//            for (int cols = 0; cols < dna.length; cols++) {
-//                myVetor[lines][cols] = String.valueOf(dna[lines].charAt(lines));
-//            }
-//        }
-
         return true;
     }
 
     private void convertArray1dToArray2d(String[] dna, String[][] myVetor) {
         for (int i = 0; i < dna.length; i ++) {
             for (int j = 0; j < dna[i].length(); j++) {
-//                System.out.println(dna[i].charAt(j));
                 myVetor[i][j] = String.valueOf(dna[i].charAt(j));
             }
         }
     }
 
-//    public static void main(String[] args) {
-//        String time = "flamengo";
-//
-//        for (int i = 0; i < time.length(); i++) {
-//            System.out.println(time.charAt(i));
-//        }
-//    }
 }
