@@ -3,6 +3,7 @@ package com.juli0mendes.validationdna.adapter.exceptions;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.common.base.CaseFormat;
+import com.juli0mendes.validationdna.application.core.exceptions.BusinessException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,6 @@ import static com.juli0mendes.validationdna.application.common.ScapeUtil.scapeSt
 @ControllerAdvice
 public class ErrorHandler {
 
-    // TODO -- implementar log
     private static final Logger log = LoggerFactory.getLogger(ErrorHandler.class);
 
     private static final String ALREADY_EXISTS_MESSAGE = " already exists.";
@@ -69,6 +69,15 @@ public class ErrorHandler {
     ErrorDto handleDuplicateKeyException(HttpServletRequest req, DuplicateKeyException ex) {
         log.error("handle-duplicate-key-exception; exception; system; exception=\"{}\";", scapeStackTrace(ex));
         return new ErrorDto(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
+    }
+
+    // ERROR 422
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler(BusinessException.class)
+    public @ResponseBody
+    ErrorDto handleBusinessException(HttpServletRequest req, BusinessException ex) {
+        log.error("handle-business-exception; exception; system; exception=\"{}\";", scapeStackTrace(ex));
+        return new ErrorDto(HttpStatus.UNPROCESSABLE_ENTITY.value(), ex.getMessage());
     }
 
     // ERROR 404

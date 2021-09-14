@@ -13,14 +13,13 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.List;
 
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+
 @RestController
 @RequestMapping("challenge-meli/v1/creatures")
 public class HttpCreatureAdapterIn {
 
-    // TODO - adicionar logs
-    // TODO - adicionar tratamento de erros
-
-    private static final Logger logger = LoggerFactory.getLogger(HttpCreatureAdapterIn.class);
+    private static final Logger log = LoggerFactory.getLogger(HttpCreatureAdapterIn.class);
 
     private final CreaturePortIn creaturePortIn;
 
@@ -29,16 +28,26 @@ public class HttpCreatureAdapterIn {
     }
 
     @PostMapping("/is-simian")
-    public ResponseEntity<?> create(@RequestBody @Valid CreatureDto creatureDto) {
+    public ResponseEntity<?> isSimian(@RequestBody @Valid CreatureDto creature) {
 
-        String[] dna = this.convertArrayListToStringArray(creatureDto);
+        log.info("is-simian; start; system; creature=\"{}\";", creature);
 
-        var ruleCreated = this.creaturePortIn.isSimian(dna);
+        String[] dna = this.convertArrayListToStringArray(creature);
 
-        return ResponseEntity.ok().build();
+        var isSimian = this.creaturePortIn.isSimian(dna);
+
+        log.info("is-simian; end; system; isSimian=\"{}\";", isSimian);
+
+        if (isSimian)
+            return ResponseEntity.ok().build();
+        else
+            return ResponseEntity.status(FORBIDDEN).build();
     }
 
     private String[] convertArrayListToStringArray(CreatureDto creatureDto) {
+
+        log.info("convert-array-list-to-string-array; start; system; creatureDto=\"{}\";", creatureDto);
+
         List<String> dnaListRequest = creatureDto.getDna();
 
         String[] dnaArray = new String[dnaListRequest.size()];
@@ -46,6 +55,9 @@ public class HttpCreatureAdapterIn {
         for (int j = 0; j < dnaListRequest.size(); j++) {
             dnaArray[j] = dnaListRequest.get(j);
         }
+
+        log.info("convert-array-list-to-string-array; end; system; dnaArray=\"{}\";", dnaArray);
+
         return dnaArray;
     }
 }

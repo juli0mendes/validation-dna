@@ -1,7 +1,6 @@
 package com.juli0mendes.validationdna.adapter.out;
 
 import com.juli0mendes.validationdna.adapter.exceptions.NotFoundException;
-import com.juli0mendes.validationdna.adapter.in.HttpRuleAdapterIn;
 import com.juli0mendes.validationdna.adapter.out.repository.MongoRuleRepository;
 import com.juli0mendes.validationdna.application.domain.Rule;
 import com.juli0mendes.validationdna.application.ports.in.RuleDto;
@@ -11,16 +10,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class MongoRuleDatabasePortOut implements RuleDatabasePortOut {
 
-    // TODO - adicionar logs
     // TODO - adicionar tratamento de erros
 
-    private static final Logger logger = LoggerFactory.getLogger(MongoRuleDatabasePortOut.class);
+    private static final Logger log = LoggerFactory.getLogger(MongoRuleDatabasePortOut.class);
 
     private final MongoRuleRepository mongoRuleRepository;
     private final MongoTemplate mongoTemplate;
@@ -32,29 +30,35 @@ public class MongoRuleDatabasePortOut implements RuleDatabasePortOut {
     }
 
     @Override
-    public Rule uppsert(RuleDto ruleDto) {
+    public Rule uppsert(RuleDto rule) {
+
+        log.info("uppsert; start; system; rule=\"{}\";", rule);
 
         Rule ruleToSave = null;
         Optional<Rule> ruleExists = null;
 
-        if (ruleDto.getId() != null) {
-            this.mongoRuleRepository.findById(ruleDto.getId())
+        if (rule.getId() != null) {
+            this.mongoRuleRepository.findById(rule.getId())
                     .orElseThrow(NotFoundException::new);
 
             ruleToSave = Rule.update(
-                    ruleDto.getName(),
-                    ruleDto.getDescription(),
-                    ruleDto.getCriterias(),
-                    ruleDto.getStatus());
+                    rule.getName(),
+                    rule.getDescription(),
+                    rule.getCriterias(),
+                    rule.getStatus());
         }
 
         ruleToSave = Rule.create(
-                ruleDto.getName(),
-                ruleDto.getDescription(),
-                ruleDto.getCriterias(),
-                ruleDto.getStatus());
+                rule.getName(),
+                rule.getDescription(),
+                rule.getCriterias(),
+                rule.getStatus());
 
-        return this.mongoRuleRepository.save(ruleToSave);
+        Rule ruleCreated = this.mongoRuleRepository.save(ruleToSave);
+
+        log.info("uppsert; end; system; ruleCreated=\"{}\";", ruleCreated);
+
+        return ruleCreated;
     }
 
     @Override
@@ -65,5 +69,10 @@ public class MongoRuleDatabasePortOut implements RuleDatabasePortOut {
     @Override
     public Rule getByName(String name) {
         return this.mongoRuleRepository.findByName(name);
+    }
+
+    @Override
+    public List<Rule> findAll() {
+        return this.mongoRuleRepository.findAll();
     }
 }

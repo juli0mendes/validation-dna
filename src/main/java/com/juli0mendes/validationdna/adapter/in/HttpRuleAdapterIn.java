@@ -11,14 +11,13 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import java.net.URI;
 
+import static com.juli0mendes.validationdna.application.common.ScapeUtil.scapeStackTrace;
+
 @RestController
 @RequestMapping("challenge-meli/v1/rules")
 public class HttpRuleAdapterIn {
 
-    // TODO - adicionar logs
-    // TODO - adicionar tratamento de erros
-
-    private static final Logger logger = LoggerFactory.getLogger(HttpRuleAdapterIn.class);
+    private static final Logger log = LoggerFactory.getLogger(HttpRuleAdapterIn.class);
 
     private final RulePortIn rulePortIn;
 
@@ -28,16 +27,26 @@ public class HttpRuleAdapterIn {
 
     @PostMapping
     public ResponseEntity<?> create(@RequestBody @Valid RuleDto ruleDto) {
+
+        log.info("create; start; system; ruleDto=\"{}\";", ruleDto);
+
         var ruleCreated = this.rulePortIn.create(ruleDto);
+
+        log.info("create; end; system; ruleCreated=\"{}\";", ruleCreated);
 
         return ResponseEntity.created(this.getLocation(ruleCreated.getId())).build();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<RuleDto> getById(@PathVariable("id") String id) {
-        RuleDto ruleDtoExists = this.rulePortIn.getById(id);
 
-        return ResponseEntity.ok(ruleDtoExists);
+        log.info("get-by-id; start; system; id=\"{}\";", id);
+
+        RuleDto ruleExists = this.rulePortIn.getById(id);
+
+        log.info("get-by-id; end; system; ruleExists=\"{}\";", ruleExists);
+
+        return ResponseEntity.ok(ruleExists);
     }
 
     private URI getLocation(String id) {
