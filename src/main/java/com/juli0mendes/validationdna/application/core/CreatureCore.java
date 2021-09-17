@@ -4,6 +4,7 @@ import com.juli0mendes.validationdna.application.core.exceptions.BusinessExcepti
 import com.juli0mendes.validationdna.application.domain.Rule;
 import com.juli0mendes.validationdna.application.ports.in.CreaturePortIn;
 import com.juli0mendes.validationdna.application.ports.out.RuleDatabasePortOut;
+import com.juli0mendes.validationdna.application.ports.out.ValidationDatabasePortOut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -26,8 +27,12 @@ public class CreatureCore implements CreaturePortIn {
 
     private final RuleDatabasePortOut ruleDatabasePortOut;
 
-    public CreatureCore(RuleDatabasePortOut ruleDatabasePortOut) {
+    private final ValidationDatabasePortOut validationDatabasePortOut;
+
+    public CreatureCore(RuleDatabasePortOut ruleDatabasePortOut,
+                        ValidationDatabasePortOut validationDatabasePortOut) {
         this.ruleDatabasePortOut = ruleDatabasePortOut;
+        this.validationDatabasePortOut = validationDatabasePortOut;
     }
 
     @Override
@@ -51,6 +56,8 @@ public class CreatureCore implements CreaturePortIn {
         });
 
         boolean isSimian = this.findWords(myVetor, words).size() > 0;
+
+        this.validationDatabasePortOut.uppsert(dna, isSimian);
 
         log.info("is-simian; end; system; isSimian=\"{}\";", isSimian);
 

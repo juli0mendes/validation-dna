@@ -16,8 +16,6 @@ import java.util.Optional;
 @Service
 public class MongoRuleDatabasePortOut implements RuleDatabasePortOut {
 
-    // TODO - adicionar tratamento de erros
-
     private static final Logger log = LoggerFactory.getLogger(MongoRuleDatabasePortOut.class);
 
     private final MongoRuleRepository mongoRuleRepository;

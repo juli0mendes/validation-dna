@@ -20,7 +20,7 @@ public class RuleCore implements RulePortIn {
 
     // TODO - adicionar tratamento de erros
 
-    private static final Logger log = LoggerFactory.getLogger(RulePortIn.class);
+    private static final Logger log = LoggerFactory.getLogger(RuleCore.class);
 
     private final RuleDatabasePortOut ruleDatabasePortOut;
 
