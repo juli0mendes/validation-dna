@@ -1,11 +1,6 @@
 package com.juli0mendes.validationdna.application.mocks;
 
 import com.juli0mendes.validationdna.application.domain.Criteria;
-import com.juli0mendes.validationdna.application.domain.CriteriaStatus;
-import com.juli0mendes.validationdna.application.ports.in.RuleDto;
-import org.apache.commons.lang3.RandomStringUtils;
-
-import java.util.UUID;
 
 import static com.juli0mendes.validationdna.application.domain.CriteriaStatus.ACTIVE;
 
@@ -17,9 +12,21 @@ public class CriteriaMock {
                 .setCharactersSequence("AAAA");
     }
 
-    public static Criteria successBbbb() {
+    public static Criteria successTttt() {
         return new Criteria()
                 .setStatus(ACTIVE)
-                .setCharactersSequence("BBBB");
+                .setCharactersSequence("TTTT");
+    }
+
+    public static Criteria successCccc() {
+        return new Criteria()
+                .setStatus(ACTIVE)
+                .setCharactersSequence("CCCC");
+    }
+
+    public static Criteria successGggg() {
+        return new Criteria()
+                .setStatus(ACTIVE)
+                .setCharactersSequence("GGGG");
     }
 }

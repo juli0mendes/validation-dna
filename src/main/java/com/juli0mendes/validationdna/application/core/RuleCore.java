@@ -5,11 +5,13 @@ import com.juli0mendes.validationdna.application.domain.Rule;
 import com.juli0mendes.validationdna.application.ports.in.RuleDto;
 import com.juli0mendes.validationdna.application.ports.in.RulePortIn;
 import com.juli0mendes.validationdna.application.ports.out.RuleDatabasePortOut;
+import org.apache.tomcat.util.digester.Rules;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.juli0mendes.validationdna.application.domain.RuleStatus.ACTIVE;
@@ -17,8 +19,6 @@ import static java.util.stream.Collectors.toList;
 
 @Service
 public class RuleCore implements RulePortIn {
-
-    // TODO - adicionar tratamento de erros
 
     private static final Logger log = LoggerFactory.getLogger(RuleCore.class);
 
@@ -63,6 +63,28 @@ public class RuleCore implements RulePortIn {
                 rule.getDescription(),
                 rule.getCriterias(),
                 rule.getStatus());
+    }
+
+    @Override
+    public List<RuleDto> findAll() {
+
+        List<RuleDto> rulesDto = new ArrayList<>();
+
+        List<Rule> rulesExists = this.ruleDatabasePortOut.findAll();
+
+        if (rulesExists.size() > 0) {
+            rulesExists.forEach(rule -> {
+                RuleDto ruleDto = RuleDto.create(
+                        rule.getId(),
+                        rule.getName(),
+                        rule.getDescription(),
+                        rule.getCriterias(),
+                        rule.getStatus());
+
+                rulesDto.add(ruleDto);
+            });
+        }
+        return rulesDto;
     }
 
     private void findRuleByName(RuleDto ruleDto) {

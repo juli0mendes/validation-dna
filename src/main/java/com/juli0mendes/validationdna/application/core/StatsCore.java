@@ -42,7 +42,11 @@ public class StatsCore implements StatsPortIn {
 
     private long calculateRation(long countMutantDna, long countHumanDna) {
         long total = countHumanDna + countMutantDna;
-        return (countMutantDna * 100) / total;
+
+        if (total == 0)
+            return 0;
+        else
+            return (countMutantDna * 100) / total;
     }
 
 }

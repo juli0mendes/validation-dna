@@ -15,7 +15,47 @@ public class RuleDtoMock {
 
         List<Criteria> criterias = new ArrayList<>();
         criterias.add(CriteriaMock.successAaaa());
-        criterias.add(CriteriaMock.successBbbb());
+        criterias.add(CriteriaMock.successTttt());
+
+        return new RuleDto()
+                .setId(UUID.randomUUID().toString())
+                .setName(RandomStringUtils.randomAlphabetic(10))
+                .setDescription(RandomStringUtils.randomAlphabetic(20))
+                .setCriterias(criterias)
+                .setStatus(RuleStatus.ACTIVE);
+    }
+
+    public static RuleDto invalidName() {
+
+        List<Criteria> criterias = new ArrayList<>();
+        criterias.add(CriteriaMock.successAaaa());
+        criterias.add(CriteriaMock.successTttt());
+
+        return new RuleDto()
+                .setId(UUID.randomUUID().toString())
+                .setName(RandomStringUtils.randomAlphabetic(2))
+                .setDescription(RandomStringUtils.randomAlphabetic(20))
+                .setCriterias(criterias)
+                .setStatus(RuleStatus.ACTIVE);
+    }
+
+    public static RuleDto invalidDescription() {
+
+        List<Criteria> criterias = new ArrayList<>();
+        criterias.add(CriteriaMock.successAaaa());
+        criterias.add(CriteriaMock.successTttt());
+
+        return new RuleDto()
+                .setId(UUID.randomUUID().toString())
+                .setName(RandomStringUtils.randomAlphabetic(10))
+                .setName(RandomStringUtils.randomAlphabetic(110))
+                .setCriterias(criterias)
+                .setStatus(RuleStatus.ACTIVE);
+    }
+
+    public static RuleDto invalidCriterias() {
+
+        List<Criteria> criterias = new ArrayList<>();
 
         return new RuleDto()
                 .setId(UUID.randomUUID().toString())

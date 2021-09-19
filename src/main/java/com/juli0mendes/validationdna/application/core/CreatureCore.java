@@ -19,8 +19,6 @@ import static com.juli0mendes.validationdna.application.domain.RuleStatus.INACTI
 @Service
 public class CreatureCore implements CreaturePortIn {
 
-    // TODO - adicionar tratamento de erros
-
     private static final Logger log = LoggerFactory.getLogger(CreatureCore.class);
 
     public static final String RULE_NAME = "is_simian";

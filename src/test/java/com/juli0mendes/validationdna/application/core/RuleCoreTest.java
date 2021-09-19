@@ -24,10 +24,7 @@ import static org.mockito.Mockito.*;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class RuleCoreTest {
 
-    // TODO - adicionar logs
-    // TODO - adicionar tratamento de erros
-
-    @Autowired(required = true)
+    @Autowired
     private RuleCore ruleCore;
 
     @MockBean

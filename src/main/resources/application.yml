@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 5000
 
 spring:
   application:
@@ -8,6 +8,7 @@ spring:
     mongodb:
       auto-index-creation: false
       uri: mongodb://localhost:27017/validation-dna
+#      uri: mongodb+srv://validation-dna:validation-dna2021@sgm-cluster.yozck.mongodb.net/validation-dna?retryWrites=true&w=majority&ssl=true&sslmode=require
       database: validation-dna
   profiles:
     active: local

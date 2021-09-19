@@ -1,5 +1,6 @@
 package com.juli0mendes.validationdna.adapter.in;
 
+import com.juli0mendes.validationdna.application.domain.Rule;
 import com.juli0mendes.validationdna.application.ports.in.RuleDto;
 import com.juli0mendes.validationdna.application.ports.in.RulePortIn;
 import org.slf4j.Logger;
@@ -10,8 +11,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
-
-import static com.juli0mendes.validationdna.application.common.ScapeUtil.scapeStackTrace;
+import java.util.List;
 
 @RestController
 @RequestMapping("challenge-meli/v1/rules")
@@ -47,6 +47,20 @@ public class HttpRuleAdapterIn {
         log.info("get-by-id; end; system; ruleExists=\"{}\";", ruleExists);
 
         return ResponseEntity.ok(ruleExists);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<RuleDto>> findAll() {
+
+        // TODO -- implementar paginacao
+
+        log.info("find-all; start; system;");
+
+        List<RuleDto> rules = this.rulePortIn.findAll();
+
+        log.info("find-all; end; system; rules=\"{}\";", rules);
+
+        return ResponseEntity.ok(rules);
     }
 
     private URI getLocation(String id) {
