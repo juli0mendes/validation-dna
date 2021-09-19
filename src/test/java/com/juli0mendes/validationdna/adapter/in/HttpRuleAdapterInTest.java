@@ -18,17 +18,19 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.net.URISyntaxException;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment= RANDOM_PORT)
 @DisplayName("AdapterIn - Creature Http")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class HttpRuleAdapterInTest {
@@ -36,10 +38,10 @@ public class HttpRuleAdapterInTest {
     private static final String ENDPOINT = "/challenge-meli/v1/rules/";
 
     @Autowired
-    TestRestTemplate testRestTemplate;
+    private TestRestTemplate testRestTemplate;
 
     @Autowired
-    MongoRuleRepository mongoRuleRepository;
+    private MongoRuleRepository mongoRuleRepository;
 
     @BeforeEach
     @After
@@ -49,32 +51,32 @@ public class HttpRuleAdapterInTest {
 
     @Test
     @DisplayName("Create with success")
-    public void createWithSuccess() {
+    public void createWithSuccess() throws URISyntaxException {
 
-        var ruleDto = RuleDtoMock.success();
+        RuleDto ruleDto = RuleDtoMock.toCreate();
 
-        var headers = new HttpHeaders();
-        headers.setContentType(APPLICATION_JSON);
+        HttpHeaders headers = new HttpHeaders();
 
-        HttpEntity<RuleDto> createRuleHttpEntity = new HttpEntity<>(ruleDto, headers);
+        HttpEntity<RuleDto> request = new HttpEntity<>(ruleDto, headers);
 
-        ResponseEntity<Object> responseCreate = testRestTemplate
-                .exchange(ENDPOINT, POST, createRuleHttpEntity, Object.class);
+        ResponseEntity<Object> responseCreate = this.testRestTemplate
+                .exchange(ENDPOINT, POST, request, Object.class);
 
-        assertThat(responseCreate.getStatusCode()).isEqualTo(CREATED);
+        assertEquals(CREATED.value(), responseCreate.getStatusCodeValue());
 
         List<String> location = responseCreate.getHeaders().get("Location");
         String idFromLocation = getIdFromLocation(location);
 
-        ResponseEntity<RuleDto> responseRead = testRestTemplate
+        ResponseEntity<RuleDto> responseRead = this.testRestTemplate
                 .exchange(ENDPOINT + idFromLocation, GET, getHttpEntity(), RuleDto.class);
 
-        assertThat(responseRead.getBody().getId()).isEqualTo(ruleDto.getId());
+        assertEquals(OK.value(), responseRead.getStatusCodeValue());
+        assertThat(responseRead.getBody().getId()).isEqualTo(idFromLocation);
     }
 
     @Test
     @DisplayName("Bad Request Invalid Name")
-    public void badrequestInvalidName() {
+    public void badRequestInvalidName() {
 
         var ruleDto = RuleDtoMock.invalidName();
 
@@ -91,7 +93,7 @@ public class HttpRuleAdapterInTest {
 
     @Test
     @DisplayName("Bad Request Invalid Description")
-    public void badrequestInvalidDescription() {
+    public void badRequestInvalidDescription() {
 
         var ruleDto = RuleDtoMock.invalidDescription();
 
@@ -108,7 +110,7 @@ public class HttpRuleAdapterInTest {
 
     @Test
     @DisplayName("Bad Request Invalid Criterias")
-    public void badrequestInvalidCriterias() {
+    public void badRequestInvalidCriterias() {
 
         var ruleDto = RuleDtoMock.invalidDescription();
 

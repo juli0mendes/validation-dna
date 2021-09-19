@@ -25,6 +25,19 @@ public class RuleDtoMock {
                 .setStatus(RuleStatus.ACTIVE);
     }
 
+    public static RuleDto toCreate() {
+
+        List<Criteria> criterias = new ArrayList<>();
+        criterias.add(CriteriaMock.successAaaa());
+        criterias.add(CriteriaMock.successTttt());
+
+        return new RuleDto()
+                .setName(RandomStringUtils.randomAlphabetic(10))
+                .setDescription(RandomStringUtils.randomAlphabetic(20))
+                .setCriterias(criterias)
+                .setStatus(RuleStatus.ACTIVE);
+    }
+
     public static RuleDto invalidName() {
 
         List<Criteria> criterias = new ArrayList<>();
