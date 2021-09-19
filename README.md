@@ -19,3 +19,6 @@ Para um melhor visualização, recomenda-se copiar o conteúdo da documentação
 - Cloud Provider: AWS
 - Database type: NoSQL (document)
 - Database provider: Atlas MongoDB
+
+# Desenho de solução
+![solution-diagram](./doc/img/solution-diagram.drawio.png)
