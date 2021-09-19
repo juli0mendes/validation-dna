@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.juli0mendes.validationdna.application.domain.Criteria;
 import com.juli0mendes.validationdna.application.domain.RuleStatus;
-import org.springframework.data.mongodb.core.index.Indexed;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -21,7 +20,6 @@ public class RuleDto {
 
     private String id;
 
-//    @Indexed(unique = true)
     @NotBlank
     @Size(min = 3, max = 40)
     private String name;

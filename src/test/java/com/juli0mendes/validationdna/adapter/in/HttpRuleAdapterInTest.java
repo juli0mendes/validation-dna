@@ -2,6 +2,7 @@ package com.juli0mendes.validationdna.adapter.in;
 
 import com.juli0mendes.validationdna.adapter.out.repository.MongoRuleRepository;
 import com.juli0mendes.validationdna.application.mocks.RuleDtoMock;
+import com.juli0mendes.validationdna.application.mocks.RuleMock;
 import com.juli0mendes.validationdna.application.ports.in.RuleDto;
 import org.junit.After;
 import org.junit.FixMethodOrder;
@@ -15,14 +16,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.Assert.assertEquals;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
@@ -30,8 +32,8 @@ import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment= RANDOM_PORT)
-@DisplayName("AdapterIn - Creature Http")
+@SpringBootTest(webEnvironment = RANDOM_PORT)
+@DisplayName("AdapterIn - Rule Http")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class HttpRuleAdapterInTest {
 
@@ -53,24 +55,24 @@ public class HttpRuleAdapterInTest {
     @DisplayName("Create with success")
     public void createWithSuccess() throws URISyntaxException {
 
-        RuleDto ruleDto = RuleDtoMock.toCreate();
+        var ruleDto = RuleDtoMock.toCreate();
 
-        HttpHeaders headers = new HttpHeaders();
+        var headers = new HttpHeaders();
 
-        HttpEntity<RuleDto> request = new HttpEntity<>(ruleDto, headers);
+        var request = new HttpEntity<>(ruleDto, headers);
 
-        ResponseEntity<Object> responseCreate = this.testRestTemplate
+        var responseCreate = this.testRestTemplate
                 .exchange(ENDPOINT, POST, request, Object.class);
 
-        assertEquals(CREATED.value(), responseCreate.getStatusCodeValue());
+        assertThat(responseCreate.getStatusCode()).isEqualTo(CREATED);
 
-        List<String> location = responseCreate.getHeaders().get("Location");
-        String idFromLocation = getIdFromLocation(location);
+        var location = responseCreate.getHeaders().get("Location");
+        var idFromLocation = getIdFromLocation(location);
 
-        ResponseEntity<RuleDto> responseRead = this.testRestTemplate
+        var responseRead = this.testRestTemplate
                 .exchange(ENDPOINT + idFromLocation, GET, getHttpEntity(), RuleDto.class);
 
-        assertEquals(OK.value(), responseRead.getStatusCodeValue());
+        assertThat(responseRead.getStatusCode()).isEqualTo(OK);
         assertThat(responseRead.getBody().getId()).isEqualTo(idFromLocation);
     }
 
@@ -83,9 +85,9 @@ public class HttpRuleAdapterInTest {
         var headers = new HttpHeaders();
         headers.setContentType(APPLICATION_JSON);
 
-        HttpEntity<RuleDto> createRuleHttpEntity = new HttpEntity<>(ruleDto, headers);
+        var createRuleHttpEntity = new HttpEntity<>(ruleDto, headers);
 
-        ResponseEntity<Object> responseCreate = testRestTemplate
+        var responseCreate = testRestTemplate
                 .exchange(ENDPOINT, POST, createRuleHttpEntity, Object.class);
 
         assertThat(responseCreate.getStatusCode()).isEqualTo(BAD_REQUEST);
@@ -100,9 +102,9 @@ public class HttpRuleAdapterInTest {
         var headers = new HttpHeaders();
         headers.setContentType(APPLICATION_JSON);
 
-        HttpEntity<RuleDto> createRuleHttpEntity = new HttpEntity<>(ruleDto, headers);
+        var createRuleHttpEntity = new HttpEntity<>(ruleDto, headers);
 
-        ResponseEntity<Object> responseCreate = testRestTemplate
+        var responseCreate = testRestTemplate
                 .exchange(ENDPOINT, POST, createRuleHttpEntity, Object.class);
 
         assertThat(responseCreate.getStatusCode()).isEqualTo(BAD_REQUEST);
@@ -117,16 +119,89 @@ public class HttpRuleAdapterInTest {
         var headers = new HttpHeaders();
         headers.setContentType(APPLICATION_JSON);
 
-        HttpEntity<RuleDto> createRuleHttpEntity = new HttpEntity<>(ruleDto, headers);
+        var createRuleHttpEntity = new HttpEntity<>(ruleDto, headers);
 
-        ResponseEntity<Object> responseCreate = testRestTemplate
+        var responseCreate = testRestTemplate
                 .exchange(ENDPOINT, POST, createRuleHttpEntity, Object.class);
 
         assertThat(responseCreate.getStatusCode()).isEqualTo(BAD_REQUEST);
     }
 
+    @Test
+    @DisplayName("Should return a Rule")
+    public void shouldReturnARule() {
+
+        var rule = this.mongoRuleRepository.save(RuleMock.toCreate());
+
+        var responseRead = this.testRestTemplate
+                .exchange(ENDPOINT + rule.getId(), GET, getHttpEntity(), RuleDto.class);
+
+        assertThat(responseRead.getStatusCode()).isEqualTo(OK);
+        assertThat(responseRead.getBody()).isNotNull();
+
+        var ruleDto = responseRead.getBody();
+
+        assertThat(ruleDto.getId()).isEqualTo(rule.getId());
+        assertThat(ruleDto.getName()).isEqualTo(rule.getName());
+        assertThat(ruleDto.getDescription()).isEqualTo(rule.getDescription());
+        assertThat(ruleDto.getStatus()).isEqualTo(rule.getStatus());
+        assertThat(ruleDto.getCriterias().size()).isEqualTo(rule.getCriterias().size());
+
+        ruleDto.getCriterias().stream().forEach(criteriaDto -> {
+            rule.getCriterias()
+                    .stream()
+                    .filter(criteria -> criteria.getCharactersSequence().equalsIgnoreCase(criteriaDto.getCharactersSequence()));
+        });
+    }
+
+    @Test
+    @DisplayName("Should return not found")
+    public void shouldReturnNotFound() {
+
+        final var idNotExists = "1234567890";
+
+        var responseRead = this.testRestTemplate
+                .exchange(ENDPOINT + idNotExists, GET, this.getHttpEntity(), RuleDto.class);
+
+        assertThat(responseRead.getStatusCode()).isEqualTo(NOT_FOUND);
+        assertThat(responseRead.getBody()).isNull();
+    }
+
+    @Test
+    @DisplayName("Should return as Rules")
+    public void shouldReturnAsRules() {
+
+        for (int i = 0; i < 10; i++)
+            this.mongoRuleRepository.save(RuleMock.toCreate());
+
+        var responseRead = this.testRestTemplate
+                .exchange(ENDPOINT, GET, getHttpEntity(), List.class);
+
+        assertThat(responseRead.getStatusCode()).isEqualTo(OK);
+        assertThat(responseRead.getBody()).isNotNull();
+
+        var rulesDto = responseRead.getBody();
+
+        assertThat(rulesDto.size()).isEqualTo(10);
+    }
+
+    @Test
+    @DisplayName("Should return as Rules zero")
+    public void shouldReturnAsRulesZero() {
+
+        var responseRead = this.testRestTemplate
+                .exchange(ENDPOINT, GET, getHttpEntity(), List.class);
+
+        assertThat(responseRead.getStatusCode()).isEqualTo(OK);
+        assertThat(responseRead.getBody()).isNotNull();
+
+        var rulesDto = responseRead.getBody();
+
+        assertThat(rulesDto.size()).isEqualTo(0);
+    }
+
     private String getIdFromLocation(List<String> location) {
-        String id = location.get(0);
+        var id = location.get(0);
 
         int idIndex = id.lastIndexOf("/") + 1;
 
@@ -143,5 +218,10 @@ public class HttpRuleAdapterInTest {
         var headers = new HttpHeaders();
         headers.setContentType(APPLICATION_JSON);
         return headers;
+    }
+
+    private String dateFormatter(Instant instantDate) {
+        var formatter = new SimpleDateFormat("dd MM yyyy HH:mm:ss");
+        return instantDate != null ? formatter.format(Date.from(instantDate)) : null;
     }
 }

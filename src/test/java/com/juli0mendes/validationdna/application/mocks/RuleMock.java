@@ -10,7 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static com.juli0mendes.validationdna.application.domain.RuleStatus.ACTIVE;
+
 public class RuleMock {
+
+    private static final String RULE_NAME = "is_simian";
 
     public static Rule success() {
 
@@ -25,7 +29,40 @@ public class RuleMock {
                 .setName(RandomStringUtils.randomAlphabetic(10))
                 .setDescription(RandomStringUtils.randomAlphabetic(20))
                 .setCriterias(criterias)
-                .setStatus(RuleStatus.ACTIVE)
+                .setStatus(ACTIVE)
+                .setCreatedAt(Instant.now());
+    }
+
+    public static Rule createRuleIsSimian() {
+
+        List<Criteria> criterias = new ArrayList<>();
+        criterias.add(CriteriaMock.successAaaa());
+        criterias.add(CriteriaMock.successTttt());
+        criterias.add(CriteriaMock.successCccc());
+        criterias.add(CriteriaMock.successGggg());
+
+        return new Rule()
+                .setId(UUID.randomUUID().toString())
+                .setName(RULE_NAME)
+                .setDescription(RandomStringUtils.randomAlphabetic(20))
+                .setCriterias(criterias)
+                .setStatus(ACTIVE)
+                .setCreatedAt(Instant.now());
+    }
+
+    public static Rule toCreate() {
+
+        List<Criteria> criterias = new ArrayList<>();
+        criterias.add(CriteriaMock.successAaaa());
+        criterias.add(CriteriaMock.successTttt());
+        criterias.add(CriteriaMock.successCccc());
+        criterias.add(CriteriaMock.successGggg());
+
+        return new Rule()
+                .setName(RandomStringUtils.randomAlphabetic(10))
+                .setDescription(RandomStringUtils.randomAlphabetic(20))
+                .setCriterias(criterias)
+                .setStatus(ACTIVE)
                 .setCreatedAt(Instant.now());
     }
 

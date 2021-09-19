@@ -21,7 +21,7 @@ public class CreatureCore implements CreaturePortIn {
 
     private static final Logger log = LoggerFactory.getLogger(CreatureCore.class);
 
-    public static final String RULE_NAME = "is_simian";
+    private static final String RULE_NAME = "is_simian";
 
     private final RuleDatabasePortOut ruleDatabasePortOut;
 
