@@ -1,0 +1,281 @@
+openapi: 3.0.0
+info:
+  title: DNA Validation API.
+  description: 'DNA validation API.'
+  version: 1.0.0
+  termsOfService: ''
+  contact:
+    email: jmendes@live.com
+    name: Júlio Cesar Mendes
+servers:
+  - url: 'https://7drcprn42e.execute-api.us-east-1.amazonaws.com/dev/challenge-meli/v1'
+    description: Development.
+tags:
+  - name: creature
+    description: Creature-related operations.
+  - name: rule
+    description: Rule-related operations.
+  - name: stats
+    description: Stats-related operations.
+paths:
+  /creatures/is-simian:
+    post:
+      summary: DNA validation.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatureDto'
+      operationId: dna-validation
+      tags:
+        - creature
+      responses:
+        '200':
+          description: Is simian.
+        '403':
+          description: Is not simian.
+        '500':
+          description: Internal Server Error.
+
+  /rules:
+    post:
+      summary: Create rule.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRule'
+      operationId: create-rule
+      tags:
+        - rule
+      responses:
+        '201':
+          description: Created.
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Created resource's URL.
+        '400':
+          description: Bad Request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Unprocessable Entity.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error.
+
+    get:
+      summary: Get Rules data.
+      operationId: get-rules
+      tags:
+        - rule
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ReadRule'
+
+  /rules/{id}:
+    get:
+      summary: Get Rule data.
+      operationId: get-rule-by-id
+      tags:
+        - rule
+      parameters:
+        - in: 'path'
+          name: 'id'
+          required: true
+          description: Rule ID.
+          example: '5f988264145cfe256165a850'
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadRule'
+        '404':
+          description: Not found
+        '500':
+          description: Internal Server Error
+
+  /stats:
+    get:
+      summary: Get Stats data.
+      operationId: get-stats
+      tags:
+        - stats
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadStats'
+        '500':
+          description: Internal Server Error
+components:
+  schemas:
+    CreatureDto:
+      type: object
+      properties:
+        dna:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            description: DNA line.
+            example: "AAAAAA"
+      required:
+        - dna
+
+    CreateRule:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Rule name
+          example: 'Name'
+          minLength: 3
+          maxLength: 40
+        description:
+          type: string
+          description: Rule description
+          example: 'Fake description'
+          minLength: 5
+          maxLength: 100
+        criterias:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            properties:
+              status:
+                type: string
+                enum:
+                  - active
+                  - inactive
+                example: active
+                description: Status criteria.
+              characters_sequence:
+                type: string
+                description: Characters sequence criteria.
+                example: 'AAAAA'
+                minLength: 4
+                maxLength: 4
+            required:
+              - status
+              - characters_sequence
+
+        status:
+          type: string
+          enum:
+            - active
+            - inactive
+          example: active
+          description: Status rule.
+
+      required:
+        - name
+        - description
+        - criterias
+        - status
+
+    ReadRule:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Rule ID.
+          example: 'd20ea7e5-d385-44c3-974e-430fa4005000'
+        name:
+          type: string
+          description: Rule name
+          example: 'Name'
+        description:
+          type: string
+          description: Rule description
+          example: 'Fake description'
+        criterias:
+          type: array
+          items:
+            type: object
+            properties:
+              status:
+                type: string
+                enum:
+                  - active
+                  - inactive
+                example: active
+                description: Status criteria.
+              characters_sequence:
+                type: string
+                description: Characters sequence criteria.
+                example: 'AAAAA'
+        status:
+          type: string
+          enum:
+            - active
+            - inactive
+          example: active
+          description: Status rule.
+
+    ReadStats:
+      type: object
+      properties:
+        count_mutant_dna:
+          type: number
+          format: int64
+          description: Quantity of dna is simio.
+          example: 1
+        count_human_dna:
+          type: number
+          format: int64
+          description: Quantity of dna is not simio.
+          example: 3
+        ratio:
+          type: number
+          format: double
+          description: Rule name
+          example: 25
+
+    Error:
+      type: object
+      description: Error example
+      properties:
+        status_code:
+          type: integer
+          description: HTTP status code
+        message:
+          type: string
+          description: Error message
+        details:
+          type: array
+          items:
+            type: object
+            properties:
+              item:
+                type: string
+                description: Item that erroed
+              description:
+                type: string
+                description: Error description
+      required:
+        - status_code
+        - message
